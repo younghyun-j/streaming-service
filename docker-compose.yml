@@ -1,0 +1,29 @@
+services:
+  application:
+    build: .
+    ports:
+      - ${APPLICATION_SERVER_PORT}
+    env_file:
+      - .env
+    environment:
+      PROFILE: dev
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Seoul
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - ${MYSQL_SERVER_PORT}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping"]
+      interval: 5s
+      retries: 10
